@@ -1,0 +1,68 @@
+package com.groupeisi.ExamenWEB.servlet;
+
+import java.io.IOException;
+import java.util.List;
+
+import javax.ejb.EJB;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import com.groupeisi.ExamenEJB.dao.ICv;
+import com.groupeisi.ExamenEJB.dao.ICvImpl;
+import com.groupeisi.ExamenEJB.entities.cv;
+
+
+@WebServlet("/modifier")
+public class ModifierServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+    
+	@EJB
+    private ICv icvimpl;
+    
+    public ModifierServlet() {
+        super();
+    }
+
+	
+	public void init(ServletConfig config) throws ServletException {
+		
+		this.icvimpl = new ICvImpl();
+	}
+
+	
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		cv c = new cv();
+		List<cv> cvs = icvimpl.list(c);
+		request.setAttribute("cvs",cvs);
+		request.getRequestDispatcher("WEB-INF/cv/list.jsp").forward(request, response);
+	}
+
+	
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		if(request.getParameter("edit") != null) {
+			cv cv = new cv();
+			icvimpl.delete(Integer.parseInt(request.getParameter("id")),cv);
+		}else {
+			cv cv = new cv();
+			cv.setNom(request.getParameter("nom"));
+			cv.setPrenom(request.getParameter("prenom"));
+			cv.setAge(request.getParameter("age"));
+			cv.setAdresse(request.getParameter("adresse"));
+			cv.setEmail(cv.getEmail());
+			cv.setPassword(cv.getPassword());
+			cv.setTelephone(request.getParameter("telephone"));
+			cv.setSpecialite(request.getParameter("specialite"));
+			cv.setNiveauEtude(request.getParameter("niveauEtude"));
+			cv.setExperienceProfessionnelle(request.getParameter("experienceProfessionnelle"));
+			icvimpl.add(cv);
+		}
+		doGet(request, response);
+	}
+
+}
